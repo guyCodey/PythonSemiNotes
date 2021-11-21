@@ -1,0 +1,263 @@
+#Importing random Module for random computer choices
+import random
+
+#making variables
+list1 = [" "," "," "," "," "," "," "," "," "]
+gameRunning = True
+turn = 1
+
+
+#printing instructions
+print("This is a tic tac toe game\nThe game will tell whose turn is it\nYou would have to number the coulumn")
+
+#want additional information?
+numberingGame = input("Do you want to know which number refers to which column (y/n) : ")
+
+#providing additional information
+if numberingGame == "y":
+
+    #printing drawing board with numbers
+    print("Here is a diagram representing the particular number representing to the particular column:\n")
+    print(f" 1  | 2 |  3\n ___|___|___\n 4  | 5 |  6 \n ___|___|___\n 7  | 8 |  9  \n    |   |")
+
+print("\n\nStarting game...\n\n")
+
+#character names
+player1 = input("What should Player 01 be called: ")
+
+#gameMode
+NoOfPlayers = input("Do you want to play VS Computer? (Type 'y' for Yes): ")
+if NoOfPlayers == "y":
+    players = 1
+    player2 = "Computer"
+else: 
+    players = 2
+    player2 = input("What should Player 02 be called: ")
+
+#In this function i could simply have done list[1] == list[b] but that might  be bad in some specific cinerios
+def checktwo(a,b,c):
+    if list1[a]!=" " and list1[b] != " " and list1[c] == " " and list1[a] == list1[b] == "X":
+        return c
+    elif list1[c]!=" " and list1[b] != " " and list1[a] == " " and list1[c] == list1[b] == "X":
+        return a
+    elif list1[a]!=" " and list1[c] != " " and list1[b] == " " and list1[a] == list1[c] == "X":
+        return b
+
+    elif list1[a]!=" " and list1[b] != " " and list1[c] == " " and list1[a] == list1[b] == "0":
+        return c
+    elif list1[c]!=" " and list1[b] != " " and list1[a] == " " and list1[c] == list1[b] == "0":
+        return a
+    elif list1[a]!=" " and list1[c] != " " and list1[b] == " " and list1[a] == list1[c] == "0":
+        return b
+    else:
+        return "failed"
+
+#Getting 0's place from user
+def getwhere0():
+    while True:
+        where0pos = int(input("Where should 0 be placed? : "))-1
+        if where0pos > 8:
+            print("Please enter a number between 1 and 9")
+            continue
+        elif where0pos <0:
+            print("Please enter a number between 1 and 9")
+            continue
+        else:
+            break
+    return where0pos
+
+#Computer Decides Move
+def compMove():
+    #Making lists containg information about the board
+    corners = [0,2,6,8]
+    remainingMoves = []
+    for i in range(len(list1)):
+        if list1[i] == " ":
+            remainingMoves.append(i)
+
+    countert = 0
+    #Horizontal line computer move
+    while countert <= 8:
+        checkedone = checktwo(countert, countert+1, countert+2)
+        if checkedone != "failed":
+                move = checkedone
+                return move
+        else: 
+            countert+=3
+            continue
+
+    countert = 0
+    #Verical line computer move
+    while countert <= 2:
+        checkedone = checktwo(countert, countert+3, countert+6)
+        if checkedone != "failed":
+            move = checkedone
+            return move
+        else: 
+            countert+=1
+            continue
+    
+    # / computer move
+    checkedone = checktwo(2,4,6)
+    if checkedone != "failed":
+        move = checkedone
+        return move
+    
+    #\ computer move
+    checkedone = checktwo(0,4,8)
+    if checkedone != "failed":
+        move = checkedone
+        return move
+
+    #As there is no problem occupy centre if available
+    if list1[4] == " ":
+        move = 4
+        return move 
+    
+    #If centre is filled occupy corner
+    cornerMove = random.choice(corners)
+    if cornerMove in remainingMoves:
+        return cornerMove
+    
+    #If nothing works occupy a randomPlace
+    else: return random.choice(remainingMoves)
+
+#main game loop
+while gameRunning:
+    tiepoints = 0
+
+    #printing basic drawing board
+    print(f" {list1[0]}  | {list1[1]} |  {list1[2]}\n ___|___|___\n {list1[3]}  | {list1[4]} |  {list1[5]} \n ___|___|___\n {list1[6]}  | {list1[7]} |  {list1[8]}  \n    |   |\n")
+
+    #player 1 turn
+    if turn%2 == 1:
+        playerTurn = player1
+        print(f"It's {playerTurn}'s turn")
+        where0 = getwhere0()
+        while True:
+            if list1[where0] == " ":
+                list1[where0] = "0"
+                break
+            else:
+                print("This column is already occupied")
+                where0 = int(input("Where should 0 be placed? : "))-1
+                continue
+
+    #player 2 turn
+    else:
+
+        playerTurn=player2
+        print(f"It's {playerTurn}'s turn")
+
+        if players == 2:
+            where1 = int(input("Where should X be placed? : "))-1
+
+        if players == 1:
+            where1 = compMove()
+
+        while True:
+            if list1[where1] == " ":
+                list1[where1] = "X"
+                break
+            else:
+                print("This column is already occupied")
+                where1 = int(input("Where should X be placed? : "))-1
+                continue
+
+
+    #winning X top horizontal
+    if (list1[0]=="X" and list1[1]=="X" and list1[2] == "X") :
+        print(f" {list1[0]}  | {list1[1]} |  {list1[2]}\n ___|___|___\n {list1[3]}  | {list1[4]} |  {list1[5]} \n ___|___|___\n {list1[6]}  | {list1[7]} |  {list1[8]}  \n    |   |\n")
+        exit(code=f"Yay {playerTurn} won")
+
+    #winning X middle horizontal
+    if (list1[3]=="X" and list1[4]=="X" and list1[5] == "X") :
+        print(f" {list1[0]}  | {list1[1]} |  {list1[2]}\n ___|___|___\n {list1[3]}  | {list1[4]} |  {list1[5]} \n ___|___|___\n {list1[6]}  | {list1[7]} |  {list1[8]}  \n    |   |\n")
+        exit(code=f"Yay {playerTurn} won")
+
+    #winning X bottom horizontal
+    if (list1[6]=="X" and list1[7]=="X" and list1[8] == "X") :
+            print(f" {list1[0]}  | {list1[1]} |  {list1[2]}\n ___|___|___\n {list1[3]}  | {list1[4]} |  {list1[5]} \n ___|___|___\n {list1[6]}  | {list1[7]} |  {list1[8]}  \n    |   |\n")
+            exit(code=f"Yay {playerTurn} won")
+    
+    #winning X left vertical
+    if (list1[0]=="X" and list1[3]=="X" and list1[6] == "X") :
+        print(f" {list1[0]}  | {list1[1]} |  {list1[2]}\n ___|___|___\n {list1[3]}  | {list1[4]} |  {list1[5]} \n ___|___|___\n {list1[6]}  | {list1[7]} |  {list1[8]}  \n    |   |\n")
+        exit(code=f"Yay {playerTurn} won")
+
+    #winning X middle vertical
+    if (list1[1]=="X" and list1[4]=="X" and list1[7] == "X") :
+        print(f" {list1[0]}  | {list1[1]} |  {list1[2]}\n ___|___|___\n {list1[3]}  | {list1[4]} |  {list1[5]} \n ___|___|___\n {list1[6]}  | {list1[7]} |  {list1[8]}  \n    |   |\n")
+        exit(code=f"Yay {playerTurn} won")
+    
+    #winning X right vertical
+    if (list1[2]=="X" and list1[5]=="X" and list1[8] == "X") :
+        print(f" {list1[0]}  | {list1[1]} |  {list1[2]}\n ___|___|___\n {list1[3]}  | {list1[4]} |  {list1[5]} \n ___|___|___\n {list1[6]}  | {list1[7]} |  {list1[8]}  \n    |   |\n")
+        exit(code=f"Yay {playerTurn} won")
+
+    #winning X backslash
+    if (list1[0]=="X" and list1[4]=="X" and list1[8] == "X") :
+        print(f" {list1[0]}  | {list1[1]} |  {list1[2]}\n ___|___|___\n {list1[3]}  | {list1[4]} |  {list1[5]} \n ___|___|___\n {list1[6]}  | {list1[7]} |  {list1[8]}  \n    |   |\n")
+        exit(code=f"Yay {playerTurn} won")
+
+    #winning X forwardslash
+    if (list1[2]=="X" and list1[4]=="X" and list1[6] == "X") :
+        print(f" {list1[0]}  | {list1[1]} |  {list1[2]}\n ___|___|___\n {list1[3]}  | {list1[4]} |  {list1[5]} \n ___|___|___\n {list1[6]}  | {list1[7]} |  {list1[8]}  \n    |   |\n")
+        exit(code=f"Yay {playerTurn} won")
+    
+        #winning 0 top horizontal
+    if (list1[0]=="0" and list1[1]=="0" and list1[2] == "0") :
+        print(f" {list1[0]}  | {list1[1]} |  {list1[2]}\n ___|___|___\n {list1[3]}  | {list1[4]} |  {list1[5]} \n ___|___|___\n {list1[6]}  | {list1[7]} |  {list1[8]}  \n    |   |\n")
+        exit(code=f"Yay {playerTurn} won")
+
+    #winning 0 middle horizontal
+    if (list1[3]=="0" and list1[4]=="0" and list1[5] == "0") :
+        print(f" {list1[0]}  | {list1[1]} |  {list1[2]}\n ___|___|___\n {list1[3]}  | {list1[4]} |  {list1[5]} \n ___|___|___\n {list1[6]}  | {list1[7]} |  {list1[8]}  \n    |   |\n")
+        exit(code=f"Yay {playerTurn} won")
+
+    #winning 0 bottom horizontal
+    if (list1[6]=="0" and list1[7]=="0" and list1[8] == "0") :
+            print(f" {list1[0]}  | {list1[1]} |  {list1[2]}\n ___|___|___\n {list1[3]}  | {list1[4]} |  {list1[5]} \n ___|___|___\n {list1[6]}  | {list1[7]} |  {list1[8]}  \n    |   |\n")
+            exit(code=f"Yay {playerTurn} won")
+    
+    #winning 0 left vertical
+    if (list1[0]=="0" and list1[3]=="0" and list1[6] == "0") :
+        print(f" {list1[0]}  | {list1[1]} |  {list1[2]}\n ___|___|___\n {list1[3]}  | {list1[4]} |  {list1[5]} \n ___|___|___\n {list1[6]}  | {list1[7]} |  {list1[8]}  \n    |   |\n")
+        exit(code=f"Yay {playerTurn} won")
+
+    #winning 0 middle vertical
+    if (list1[1]=="0" and list1[4]=="0" and list1[7] == "0") :
+        print(f" {list1[0]}  | {list1[1]} |  {list1[2]}\n ___|___|___\n {list1[3]}  | {list1[4]} |  {list1[5]} \n ___|___|___\n {list1[6]}  | {list1[7]} |  {list1[8]}  \n    |   |\n")
+        exit(code=f"Yay {playerTurn} won")
+    
+    #winning 0 right vertical
+    if (list1[2]=="0" and list1[5]=="0" and list1[8] == "0") :
+        print(f" {list1[0]}  | {list1[1]} |  {list1[2]}\n ___|___|___\n {list1[3]}  | {list1[4]} |  {list1[5]} \n ___|___|___\n {list1[6]}  | {list1[7]} |  {list1[8]}  \n    |   |\n")
+        exit(code=f"Yay {playerTurn} won")
+
+    #winning 0 backslash
+    if (list1[0]=="0" and list1[4]=="0" and list1[8] == "0") :
+        print(f" {list1[0]}  | {list1[1]} |  {list1[2]}\n ___|___|___\n {list1[3]}  | {list1[4]} |  {list1[5]} \n ___|___|___\n {list1[6]}  | {list1[7]} |  {list1[8]}  \n    |   |\n")
+        exit(code=f"Yay {playerTurn} won")
+
+    #winning 0 forwardslash
+    if (list1[2]=="0" and list1[4]=="0" and list1[6] == "0") :
+        print(f" {list1[0]}  | {list1[1]} |  {list1[2]}\n ___|___|___\n {list1[3]}  | {list1[4]} |  {list1[5]} \n ___|___|___\n {list1[6]}  | {list1[7]} |  {list1[8]}  \n    |   |\n")
+        exit(code=f"Yay {playerTurn} won")
+    
+    # addressing tie
+    for i in list1:
+        if i==" ":
+            continue
+        else:
+            tiepoints+=1
+    if tiepoints == 9:
+        exit(code="Its a tie")
+    print(f"Tie points are {tiepoints}")
+
+
+    turn+=1
+
+    
+
+#Made by Drakula3436M
